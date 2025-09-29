@@ -1,2 +1,30 @@
-# mentoring
-An app that connects people who want to learn something quickly (e.g., "I want to learn Git in 30 min", "I want to ask a question about Docker") with micro-mentors who have experience in the field and can teach in short sessions (15-30 min).
+# SkillBridge
+
+SkillBridge is a mentorship platform that connects learners with industry mentors.  
+It was built as a **full-stack demo project** to showcase software engineering, DevOps, and deployment skills.
+
+## 🚀 Features
+- Secure login with JWT authentication
+- Mentor and learner profiles
+- Session requests and dashboard
+- API-first design with Swagger documentation
+- Full Dockerized setup (backend, frontend, database)
+- CI/CD pipeline (GitHub Actions → Docker Hub → Render)
+
+---
+
+## 🛠️ Tech Stack
+- **Frontend:** React, TailwindCSS, served with Nginx
+- **Backend:** Node.js, Express, JWT, Swagger
+- **Database:** PostgreSQL
+- **DevOps:** Docker, Docker Compose, GitHub Actions, Render
+- **Testing:** Postman, automated CI tests
+
+---
+
+## 📦 Getting Started
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/skillbridge.git
+cd skillbridge
