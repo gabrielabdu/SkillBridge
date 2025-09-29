@@ -1,0 +1,81 @@
+src/routes/sessionRoutes.js
+
+import express from "express";
+import { createSession, getSessionsByMentor, getSessionsByUser } from "../controllers/sessionController.js";
+
+const router = express.Router();
+
+router.post("/", createSession);                // create session request
+router.get("/mentor/:mentor_id", getSessionsByMentor);
+router.get("/user/:user_id", getSessionsByUser);
+
+export default router;
+
+
+
+
+
+
+src/controllers/sessionController.js
+
+import pool from "../config/db.js";
+
+export async function createSession(req, res) {
+  const { user_id, mentor_id, date, notes } = req.body;
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO sessions (user_id, mentor_id, date, notes) VALUES ($1, $2, $3, $4) RETURNING *",
+      [user_id, mentor_id, date, notes]
+    );
+
+    res.status(201).json({ message: "Session created", session: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating session", error });
+  }
+}
+
+export async function getSessionsByMentor(req, res) {
+  const { mentor_id } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT s.*, u.name AS user_name FROM sessions s JOIN users u ON s.user_id = u.id WHERE mentor_id = $1",
+      [mentor_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching sessions", error });
+  }
+}
+
+export async function getSessionsByUser(req, res) {
+  const { user_id } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT s.*, m.id AS mentor_id, u.name AS mentor_name FROM sessions s JOIN mentors m ON s.mentor_id = m.id JOIN users u ON m.user_id = u.id WHERE s.user_id = $1",
+      [user_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching sessions", error });
+  }
+}
+
+
+
+
+
+PostgreSQL Table for Sessions
+
+Run in psql:
+
+CREATE TABLE sessions (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  mentor_id INTEGER REFERENCES mentors(id) ON DELETE CASCADE,
+  date TIMESTAMP NOT NULL,
+  notes TEXT,
+  status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, rejected
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
