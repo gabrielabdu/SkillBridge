@@ -1,0 +1,38 @@
+Example: src/controllers/mentorController.js
+
+export async function createMentorProfile(req, res) {
+  const user_id = req.user.id; // from token
+  const { bio, skills } = req.body;
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO mentors (user_id, bio, skills) VALUES ($1, $2, $3) RETURNING *",
+      [user_id, bio, skills]
+    );
+
+    res.status(201).json({ message: "Mentor profile created", mentor: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating mentor profile", error });
+  }
+}
+
+
+
+
+Example: src/controllers/sessionController.js
+
+export async function createSession(req, res) {
+  const user_id = req.user.id; // from token
+  const { mentor_id, date, notes } = req.body;
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO sessions (user_id, mentor_id, date, notes) VALUES ($1, $2, $3, $4) RETURNING *",
+      [user_id, mentor_id, date, notes]
+    );
+
+    res.status(201).json({ message: "Session created", session: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating session", error });
+  }
+}
