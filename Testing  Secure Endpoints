@@ -1,0 +1,34 @@
+Register or Login
+POST /api/users/login → copy the token returned
+
+
+
+
+Use Token in Postman/Insomnia
+Add a header:
+
+Authorization: Bearer <your_token_here>
+
+
+
+
+Create Mentor Profile
+POST /api/mentors
+
+{
+  "bio": "I teach React, Node.js, and Docker",
+  "skills": "React,Node.js,Docker"
+}
+
+
+
+
+Create Session Request
+POST /api/sessions
+
+{
+  "mentor_id": 1,
+  "date": "2025-09-20T15:00:00Z",
+  "notes": "I need help understanding Docker basics"
+}
+
