@@ -1,1 +1,23 @@
+skillbridge-backend/
+├── src/
+│   ├── controllers/
+│   │   ├── userController.js
+│   │   ├── mentorController.js
+│   │   └── sessionController.js
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Mentor.js
+│   │   └── Session.js
+│   ├── routes/
+│   │   ├── userRoutes.js
+│   │   ├── mentorRoutes.js
+│   │   └── sessionRoutes.js
+│   ├── config/
+│   │   └── db.js
+│   ├── middleware/
+│   │   └── authMiddleware.js
+│   └── index.js
+├── .env
+├── package.json
+└── README.md
 
