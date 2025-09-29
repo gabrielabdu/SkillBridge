@@ -1,0 +1,161 @@
+Update loginUser in src/controllers/userController.js
+
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import pool from "../config/db.js";
+
+function generateAccessToken(userId) {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "15m" });
+}
+
+function generateRefreshToken(userId) {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+}
+
+export async function loginUser(req, res) {
+  const { email, password } = req.body;
+
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (result.rows.length === 0) return res.status(401).json({ message: "Invalid credentials" });
+
+    const user = result.rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    // store refresh token in DB (optional but recommended)
+    await pool.query(
+      "UPDATE users SET refresh_token = $1 WHERE id = $2",
+      [refreshToken, user.id]
+    );
+
+    res.json({ 
+      message: "Login successful", 
+      accessToken, 
+      refreshToken 
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging in", error });
+  }
+}
+
+
+
+
+
+
+
+Update Database Schema
+
+Add a refresh_token column to users:
+
+ALTER TABLE users ADD COLUMN refresh_token TEXT;
+
+
+
+
+
+
+
+Create Refresh Token Endpoint
+
+Create a new controller in src/controllers/userController.js:
+
+export async function refreshAccessToken(req, res) {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "No refresh token provided" });
+  }
+
+  try {
+    // Check if token is in DB
+    const result = await pool.query("SELECT * FROM users WHERE refresh_token = $1", [refreshToken]);
+    if (result.rows.length === 0) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
+
+    // Verify token is still valid
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    const accessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+
+    res.json({ accessToken });
+  } catch (error) {
+    res.status(403).json({ message: "Invalid or expired refresh token" });
+  }
+}
+
+
+
+
+
+
+Create Logout Endpoint
+
+Also inside userController.js:
+
+export async function logoutUser(req, res) {
+  const { refreshToken } = req.body;
+
+  try {
+    await pool.query("UPDATE users SET refresh_token = NULL WHERE refresh_token = $1", [refreshToken]);
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging out", error });
+  }
+}
+
+
+
+
+
+Update src/routes/userRoutes.js
+
+import express from "express";
+import { registerUser, loginUser, refreshAccessToken, logoutUser } from "../controllers/userController.js";
+
+const router = express.Router();
+
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.post("/refresh", refreshAccessToken);
+router.post("/logout", logoutUser);
+
+export default router;
+
+
+
+
+
+
+
+Testing Refresh Flow
+
+Login
+POST /api/users/login → receive accessToken + refreshToken
+
+Use Access Token
+Add Authorization: Bearer <accessToken> header to call protected routes.
+
+When Access Token Expires
+Call POST /api/users/refresh with:
+
+{ "refreshToken": "<your_refresh_token>" }
+
+
+Logout
+Call POST /api/users/logout with:
+
+{ "refreshToken": "<your_refresh_token>" }
+
+
+
+
+
+
+
+
+
