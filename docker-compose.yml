@@ -1,0 +1,38 @@
+Create a file named docker-compose.yml at the root of your project:
+
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: skillbridge_db
+    restart: always
+    environment:
+      POSTGRES_USER: skillbridge
+      POSTGRES_PASSWORD: skillbridge
+      POSTGRES_DB: skillbridge
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./seed_with_hashes.sql:/docker-entrypoint-initdb.d/seed.sql
+
+  backend:
+    build: .
+    container_name: skillbridge_api
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PORT: 5000
+      DATABASE_URL: postgres://skillbridge:skillbridge@db:5432/skillbridge
+      JWT_SECRET: super_secret_key
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/usr/src/app
+    command: npm run dev
+
+volumes:
+  db_data:
