@@ -1,0 +1,78 @@
+src/routes/mentorRoutes.js
+
+import express from "express";
+import { createMentorProfile, getMentors, getMentorById } from "../controllers/mentorController.js";
+
+const router = express.Router();
+
+router.post("/", createMentorProfile); // create mentor profile
+router.get("/", getMentors);           // list all mentors
+router.get("/:id", getMentorById);     // get mentor by ID
+
+export default router;
+
+
+
+
+src/controllers/mentorController.js
+
+import pool from "../config/db.js";
+
+export async function createMentorProfile(req, res) {
+  const { user_id, bio, skills } = req.body;
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO mentors (user_id, bio, skills) VALUES ($1, $2, $3) RETURNING *",
+      [user_id, bio, skills]
+    );
+
+    res.status(201).json({ message: "Mentor profile created", mentor: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating mentor profile", error });
+  }
+}
+
+export async function getMentors(req, res) {
+  try {
+    const result = await pool.query(
+      "SELECT m.*, u.name, u.email FROM mentors m JOIN users u ON m.user_id = u.id"
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching mentors", error });
+  }
+}
+
+export async function getMentorById(req, res) {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT m.*, u.name, u.email FROM mentors m JOIN users u ON m.user_id = u.id WHERE m.id = $1",
+      [id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ message: "Mentor not found" });
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching mentor", error });
+  }
+}
+
+
+
+
+
+
+
+PostgreSQL Table for Mentors
+
+Run in psql:
+
+CREATE TABLE mentors (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  bio TEXT,
+  skills TEXT, -- could be a comma-separated string or a JSON array
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
