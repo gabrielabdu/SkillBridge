@@ -1,29 +1,98 @@
-# SkillBridge
+# SkillBridge API
 
-SkillBridge is a mentorship platform that connects learners with industry mentors.  
+SkillBridge is a mentorship matching platform that connects learners
+with mentors.\
+This is the **backend API** for the project, built with **Node.js**,
+**Express**, and **PostgreSQL**.
+
+------------------------------------------------------------------------
 
 ## 🚀 Features
-- Secure login with JWT authentication
-- Mentor and learner profiles
-- Session requests and dashboard
-- API-first design with Swagger documentation
-- Full Dockerized setup (backend, frontend, database)
-- CI/CD pipeline (GitHub Actions → Docker Hub → Render)
 
----
+-   User registration & login with **JWT authentication**
+-   **Role-Based Access Control** (RBAC) for mentors & users
+-   Session creation & management (mentors can accept/reject)
+-   Secure password hashing with **bcrypt**
+-   Refresh token support
+-   Ready-to-use **Postman collection** for testing
 
-## 🛠️ Tech Stack
-- **Frontend:** React, TailwindCSS, served with Nginx
-- **Backend:** Node.js, Express, JWT, Swagger
-- **Database:** PostgreSQL
-- **DevOps:** Docker, Docker Compose, GitHub Actions, Render
-- **Testing:** Postman, automated CI tests
+------------------------------------------------------------------------
 
----
+## 📦 Installation
 
-## 📦 Getting Started
+### 1. Clone Repository
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/skillbridge.git
-cd skillbridge
+``` bash
+git clone https://github.com/your-username/skillbridge-api.git
+cd skillbridge-api
+```
+
+### 2. Install Dependencies
+
+``` bash
+npm install
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file with:
+
+``` env
+PORT=5000
+DATABASE_URL=postgresql://user:password@localhost:5432/skillbridge
+JWT_SECRET=your_secret_key
+```
+
+### 4. Run Database Migrations
+
+``` bash
+psql -d skillbridge -f migrations/init.sql
+```
+
+### 5. Start Server
+
+``` bash
+npm run dev
+```
+
+Server will run at `http://localhost:5000`.
+
+------------------------------------------------------------------------
+
+## 🧪 Testing with Postman
+
+1.  Download the Postman collection:\
+    [SkillBridge_Postman_Collection.json](./SkillBridge_Postman_Collection.json)
+
+2.  Import into Postman.
+
+3.  **Test Flow:**
+
+    -   Register a **user** (role: `user`)
+    -   Register a **mentor** (role: `mentor`)
+    -   Login → copy `accessToken` from response
+    -   Set it as a **Postman environment variable**: `accessToken`
+    -   Create a session as user → accept session as mentor
+
+------------------------------------------------------------------------
+
+## 🏗️ Tech Stack
+
+-   **Node.js** + **Express**
+-   **PostgreSQL**
+-   **JWT** (Auth)
+-   **bcrypt** (Password Hashing)
+
+------------------------------------------------------------------------
+
+## 🤝 Contributing
+
+Pull requests are welcome!\
+For major changes, please open an issue first to discuss what you would
+like to change.
+
+------------------------------------------------------------------------
+
+## 📄 License
+
+MIT License © 2025 Gabriel Abdu
