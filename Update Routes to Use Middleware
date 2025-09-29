@@ -1,0 +1,31 @@
+src/routes/mentorRoutes.js
+
+import express from "express";
+import { createMentorProfile, getMentors, getMentorById } from "../controllers/mentorController.js";
+import { protect } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+router.post("/", protect, createMentorProfile); // only logged-in users can create mentor profile
+router.get("/", getMentors);
+router.get("/:id", getMentorById);
+
+export default router;
+
+
+
+
+
+src/routes/sessionRoutes.js
+
+import express from "express";
+import { createSession, getSessionsByMentor, getSessionsByUser } from "../controllers/sessionController.js";
+import { protect } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+router.post("/", protect, createSession); // only logged-in users can create sessions
+router.get("/mentor/:mentor_id", protect, getSessionsByMentor);
+router.get("/user/:user_id", protect, getSessionsByUser);
+
+export default router;
