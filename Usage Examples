@@ -1,0 +1,18 @@
+Start everything:
+
+make up
+
+
+Stop everything:
+
+make down
+
+
+View backend logs:
+
+make logs-backend
+
+
+Enter PostgreSQL CLI:
+
+make psql
