@@ -1,0 +1,14 @@
+Run these commands:
+
+mkdir skillbridge-backend
+cd skillbridge-backend
+npm init -y
+npm install express pg dotenv bcrypt jsonwebtoken cors
+npm install --save-dev nodemon
+
+
+Add a start script in package.json:
+
+"scripts": {
+  "dev": "nodemon src/index.js"
+}
