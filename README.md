@@ -1,7 +1,6 @@
 # SkillBridge
 
 SkillBridge is a mentorship platform that connects learners with industry mentors.  
-It was built as a **full-stack demo project** to showcase software engineering, DevOps, and deployment skills.
 
 ## 🚀 Features
 - Secure login with JWT authentication
