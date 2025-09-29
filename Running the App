@@ -1,0 +1,12 @@
+Build and start:
+
+docker-compose up --build
+
+
+Backend API will be live at:
+👉 http://localhost:5000
+
+PostgreSQL will be available at:
+👉 localhost:5432 (user: skillbridge, password: skillbridge)
+
+The database will auto-run init.sql and seed_with_hashes.sql at startup → so sample users and session will be ready immediately 🎉
